@@ -1,0 +1,9 @@
+.Layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+body > #root > div {
+  height: 100vh;
+}
