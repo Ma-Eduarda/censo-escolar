@@ -7,7 +7,7 @@ import Instituicoes from "./Pages/Instituicoes.jsx";
 
 function App() {
   return (
-    <Router>
+    <Router> 
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
