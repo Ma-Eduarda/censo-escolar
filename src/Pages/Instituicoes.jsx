@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, Row, Col, Table, Form, Modal } from "react-bootstrap";
-import pessoasDataset from "../datasets/pessoas";
+import pessoasDataset from "../Datasets/pessoas.js";
 
 const Instituicoes = () => {
     const [pessoas, setPessoas] = useState(pessoasDataset);
