@@ -2,7 +2,7 @@
   "name": "vite-project",
   "private": true,
   "version": "0.0.0",
-  "homepage": "https://github.com/Ma-Eduarda/RouterV6Web",
+  "homepage": "https://github.com/Ma-Eduarda/censo-escolar",
   "type": "module",
   "scripts": {
     "start": "vite --port 5000",
