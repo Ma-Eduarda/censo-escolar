@@ -1,5 +1,5 @@
 import { Container, Row, Col, Image, Nav, NavLink } from "react-bootstrap";
-import logo from "../images/logo.png"; 
+import logo from "../Images/logo.png"; 
 
 function Footer() {
     return (
@@ -13,7 +13,7 @@ function Footer() {
                             alt="company logo"
                             rounded
                             width={100}
-                            height={100}
+                            height={80}
                         />
                         <h4 className="mt-3">Censo Escolar</h4>
                         <p>Instituições de Ensino</p>
