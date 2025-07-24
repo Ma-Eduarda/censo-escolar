@@ -13,28 +13,26 @@ const InstituicaoEnsino = () => {
         regiao: '',
     });
 
-    const [municipios, setMunicipios] = useState([]); 
     const [show, setShow] = useState(false);
+
+    const [municipios, setMunicipios] = useState([]);
 
     const handleShow = () => setShow(!show);
 
+    const handleSubmit = (event) => {
+        event.preventDefault();
+    };
+
     const handleChange = (event) => {
         const { name, value } = event.target;
-
+        
         if (name === 'uf') {
             const listaMunicipios = cidadesEstados[value] || [];
             setMunicipios(listaMunicipios);
+            setInstituicaoEnsino({ ...instituicaoEnsino, uf: value, municipio: '' });
 
-            setInstituicaoEnsino({
-                ...instituicaoEnsino,
-                uf: value,
-                municipio: ''
-            });
         } else {
-            setInstituicaoEnsino({
-                ...instituicaoEnsino,
-                [name]: value
-            });
+            setInstituicaoEnsino({ ...instituicaoEnsino, [name]: value });
         }
     };
 
@@ -99,7 +97,7 @@ const InstituicaoEnsino = () => {
                 <Modal.Header closeButton>
                     <Modal.Title>Instituição de Ensino</Modal.Title>
                 </Modal.Header>
-                <Form>
+                <Form onSubmit={handleSubmit}>
                     <Modal.Body>
                         <Row>
                             <Col sm={3}>
@@ -191,7 +189,7 @@ const InstituicaoEnsino = () => {
                             Fechar
                         </Button>
                         <Button variant="danger">Apagar</Button>
-                        <Button type="submit" variant="primary" onClick={handleShow}>
+                        <Button type="submit" variant="primary">
                             Salvar
                         </Button>
                     </Modal.Footer>
