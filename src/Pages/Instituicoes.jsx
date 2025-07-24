@@ -1,15 +1,7 @@
 import { useState } from 'react';
-import {
-    Button,
-    Col,
-    Container,
-    Form,
-    Modal,
-    Row,
-    Table,
-} from 'react-bootstrap';
+import { Button, Col, Container, Form, Modal, Row, Table } from 'react-bootstrap';
 import instituicoesEnsino from '../datasets/censoescolar';
-import cidadesEstados from '../datasets/cidade-estado'; 
+import cidadesEstados from '../datasets/cidade-estado';
 import './Instituicoes.css';
 
 const InstituicaoEnsino = () => {
@@ -21,13 +13,29 @@ const InstituicaoEnsino = () => {
         regiao: '',
     });
 
+    const [municipios, setMunicipios] = useState([]); 
     const [show, setShow] = useState(false);
 
     const handleShow = () => setShow(!show);
 
     const handleChange = (event) => {
         const { name, value } = event.target;
-        setInstituicaoEnsino({ ...instituicaoEnsino, [name]: value });
+
+        if (name === 'uf') {
+            const listaMunicipios = cidadesEstados[value] || [];
+            setMunicipios(listaMunicipios);
+
+            setInstituicaoEnsino({
+                ...instituicaoEnsino,
+                uf: value,
+                municipio: ''
+            });
+        } else {
+            setInstituicaoEnsino({
+                ...instituicaoEnsino,
+                [name]: value
+            });
+        }
     };
 
     return (
@@ -69,21 +77,19 @@ const InstituicaoEnsino = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {instituicoesEnsino.map((instituicaoEnsino, i) => {
-                                return (
-                                    <tr key={i}>
-                                        <td>{instituicaoEnsino.codigo}</td>
-                                        <td>{instituicaoEnsino.nome}</td>
-                                        <td>{instituicaoEnsino.no_uf}</td>
-                                        <td>{instituicaoEnsino.no_municipio}</td>
-                                        <td>{instituicaoEnsino.no_regiao}</td>
-                                        <td>{instituicaoEnsino.qt_mat_bas}</td>
-                                        <td>{instituicaoEnsino.qt_mat_prof}</td>
-                                        <td>{instituicaoEnsino.qt_mat_eja}</td>
-                                        <td>{instituicaoEnsino.qt_mat_esp}</td>
-                                    </tr>
-                                );
-                            })}
+                            {instituicoesEnsino.map((instituicaoEnsino, i) => (
+                                <tr key={i}>
+                                    <td>{instituicaoEnsino.codigo}</td>
+                                    <td>{instituicaoEnsino.nome}</td>
+                                    <td>{instituicaoEnsino.no_uf}</td>
+                                    <td>{instituicaoEnsino.no_municipio}</td>
+                                    <td>{instituicaoEnsino.no_regiao}</td>
+                                    <td>{instituicaoEnsino.qt_mat_bas}</td>
+                                    <td>{instituicaoEnsino.qt_mat_prof}</td>
+                                    <td>{instituicaoEnsino.qt_mat_eja}</td>
+                                    <td>{instituicaoEnsino.qt_mat_esp}</td>
+                                </tr>
+                            ))}
                         </tbody>
                     </Table>
                 </Col>
@@ -135,7 +141,9 @@ const InstituicaoEnsino = () => {
                                     >
                                         <option value="">Selecione UF</option>
                                         {cidadesEstados.estados.map(uf => (
-                                            <option key={uf.value} value={uf.value}> {uf.label} </option>
+                                            <option key={uf.value} value={uf.value}>
+                                                {uf.label}
+                                            </option>
                                         ))}
                                     </Form.Select>
                                 </Form.Group>
@@ -150,8 +158,10 @@ const InstituicaoEnsino = () => {
                                         required
                                     >
                                         <option value="">Selecione Município</option>
-                                        {(cidadesEstados[instituicaoEnsino.uf] || []).map(m => (
-                                            <option key={m.value} value={m.value}>{m.label}</option>
+                                        {municipios.map(m => (
+                                            <option key={m.value} value={m.value}>
+                                                {m.label}
+                                            </option>
                                         ))}
                                     </Form.Select>
                                 </Form.Group>
