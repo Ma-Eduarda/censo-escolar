@@ -2,7 +2,7 @@ var instituicoesEnsino = [
     {
         codigo: '1030',
         nome: 'Instituto Federal da Paraíba - Campus Guarabira',
-        no_uf: 'Paraíba',
+        no_uf: 'PB',
         co_uf: '25',
         no_municipio: 'Guarabira',
         co_municipio: '2506301',

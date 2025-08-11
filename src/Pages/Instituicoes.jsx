@@ -1,15 +1,7 @@
-import { useState } from 'react';
-import {
-    Button,
-    Col,
-    Container,
-    Form,
-    Modal,
-    Row,
-    Table,
-} from 'react-bootstrap';
-import instituicoesEnsino from '../datasets/censoescolar';
-import cidadesEstados from '../datasets/cidade-estado'; 
+import { useState, useEffect } from 'react';
+import { Button, Col, Container, Form, Modal, Row, Table } from 'react-bootstrap';
+import instituicoesBase from '../datasets/censoescolar';
+import cidadesEstados from '../datasets/cidade-estado';
 import './Instituicoes.css';
 
 const InstituicaoEnsino = () => {
@@ -19,20 +11,72 @@ const InstituicaoEnsino = () => {
         uf: '',
         municipio: '',
         regiao: '',
+        qt_mat_bas: '',
+        qt_mat_prof: '',
+        qt_mat_eja: '',
+        qt_mat_esp: ''
     });
 
     const [show, setShow] = useState(false);
+    const [municipios, setMunicipios] = useState([]);
+    const [listaInstituicoes, setListaInstituicoes] = useState([]);
+
+    useEffect(() => {
+        const dadosSalvos = JSON.parse(localStorage.getItem('instituicoes')) || [];
+        setListaInstituicoes([...instituicoesBase, ...dadosSalvos]);
+    }, []);
 
     const handleShow = () => setShow(!show);
 
+    const handleSubmit = (event) => {
+        event.preventDefault();
+
+        const dadosSalvos = JSON.parse(localStorage.getItem('instituicoes')) || [];
+        const novosDados = [...dadosSalvos, instituicaoEnsino];
+        localStorage.setItem('instituicoes', JSON.stringify(novosDados));
+
+        setListaInstituicoes([...listaInstituicoes, instituicaoEnsino]);
+
+        setInstituicaoEnsino({
+            codigo: '',
+            nome: '',
+            uf: '',
+            municipio: '',
+            regiao: '',
+            qt_mat_bas: '',
+            qt_mat_prof: '',
+            qt_mat_eja: '',
+            qt_mat_esp: ''
+        });
+
+        setShow(false);
+    };
+
     const handleChange = (event) => {
         const { name, value } = event.target;
-        setInstituicaoEnsino({ ...instituicaoEnsino, [name]: value });
+
+        if (name === 'uf') {
+            const listaMunicipios = cidadesEstados[value] || [];
+            setMunicipios(listaMunicipios);
+
+            const estadoSelecionado = cidadesEstados.estados.find(uf => uf.value === value);
+            const regiao = estadoSelecionado ? estadoSelecionado.regiao : '';
+
+            setInstituicaoEnsino({
+                ...instituicaoEnsino,
+                uf: value,
+                municipio: '',
+                regiao: regiao
+            });
+        } else {
+            setInstituicaoEnsino({ ...instituicaoEnsino, [name]: value });
+        }
     };
 
     return (
         <Container className="mt-2">
-            <Row className="mt-5 mb-5 ">
+            {/* Barra de busca e botão */}
+            <Row className="mt-5 mb-5">
                 <Col>
                     <Row className="align-items-center">
                         <Col xs={8}>
@@ -46,12 +90,13 @@ const InstituicaoEnsino = () => {
                             </Form>
                         </Col>
                         <Col xs={4} className="text-end">
-                            <Button style={{ float: 'right' }} variant="primary" onClick={handleShow}> + </Button>
+                            <Button variant="primary" onClick={handleShow}> + </Button>
                         </Col>
                     </Row>
                 </Col>
             </Row>
 
+            {/* Tabela */}
             <Row className="mt-2">
                 <Col>
                     <Table striped bordered hover size="sm">
@@ -63,45 +108,43 @@ const InstituicaoEnsino = () => {
                                 <th>Município</th>
                                 <th>Região</th>
                                 <th>Mat. Básico</th>
-                                <th>Mat. da Educação Profissional</th>
-                                <th>Mat. da Educação de Jovens e Adultos (EJA)</th>
-                                <th>Mat. da Educação Especial</th>
+                                <th>Mat. Prof.</th>
+                                <th>Mat. EJA</th>
+                                <th>Mat. Esp.</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {instituicoesEnsino.map((instituicaoEnsino, i) => {
-                                return (
-                                    <tr key={i}>
-                                        <td>{instituicaoEnsino.codigo}</td>
-                                        <td>{instituicaoEnsino.nome}</td>
-                                        <td>{instituicaoEnsino.no_uf}</td>
-                                        <td>{instituicaoEnsino.no_municipio}</td>
-                                        <td>{instituicaoEnsino.no_regiao}</td>
-                                        <td>{instituicaoEnsino.qt_mat_bas}</td>
-                                        <td>{instituicaoEnsino.qt_mat_prof}</td>
-                                        <td>{instituicaoEnsino.qt_mat_eja}</td>
-                                        <td>{instituicaoEnsino.qt_mat_esp}</td>
-                                    </tr>
-                                );
-                            })}
+                            {listaInstituicoes.map((inst, i) => (
+                                <tr key={i}>
+                                    <td>{inst.codigo}</td>
+                                    <td>{inst.nome}</td>
+                                    <td>{inst.no_uf || inst.uf}</td>
+                                    <td>{inst.no_municipio || inst.municipio}</td>
+                                    <td>{inst.no_regiao || inst.regiao}</td>
+                                    <td>{inst.qt_mat_bas}</td>
+                                    <td>{inst.qt_mat_prof}</td>
+                                    <td>{inst.qt_mat_eja}</td>
+                                    <td>{inst.qt_mat_esp}</td>
+                                </tr>
+                            ))}
                         </tbody>
                     </Table>
                 </Col>
             </Row>
 
+            {/* Modal */}
             <Modal show={show} onHide={handleShow} dialogClassName="modal-80w">
                 <Modal.Header closeButton>
                     <Modal.Title>Instituição de Ensino</Modal.Title>
                 </Modal.Header>
-                <Form>
+                <Form onSubmit={handleSubmit}>
                     <Modal.Body>
                         <Row>
                             <Col sm={3}>
-                                <Form.Group className="mb-3" controlId="formGroupCodigo">
+                                <Form.Group className="mb-3">
                                     <Form.Label>Código</Form.Label>
                                     <Form.Control
                                         type="text"
-                                        placeholder="Código"
                                         name="codigo"
                                         value={instituicaoEnsino.codigo}
                                         onChange={handleChange}
@@ -110,11 +153,10 @@ const InstituicaoEnsino = () => {
                                 </Form.Group>
                             </Col>
                             <Col sm={9}>
-                                <Form.Group className="mb-3" controlId="formGroupNome">
+                                <Form.Group className="mb-3">
                                     <Form.Label>Nome</Form.Label>
                                     <Form.Control
                                         type="text"
-                                        placeholder="Nome"
                                         name="nome"
                                         value={instituicaoEnsino.nome}
                                         onChange={handleChange}
@@ -123,9 +165,10 @@ const InstituicaoEnsino = () => {
                                 </Form.Group>
                             </Col>
                         </Row>
+
                         <Row>
                             <Col>
-                                <Form.Group className="mb-3" controlId="formGroupUF">
+                                <Form.Group className="mb-3">
                                     <Form.Label>UF</Form.Label>
                                     <Form.Select
                                         name="uf"
@@ -135,13 +178,15 @@ const InstituicaoEnsino = () => {
                                     >
                                         <option value="">Selecione UF</option>
                                         {cidadesEstados.estados.map(uf => (
-                                            <option key={uf.value} value={uf.value}> {uf.label} </option>
+                                            <option key={uf.value} value={uf.value}>
+                                                {uf.label}
+                                            </option>
                                         ))}
                                     </Form.Select>
                                 </Form.Group>
                             </Col>
                             <Col>
-                                <Form.Group className="mb-3" controlId="formGroupMunicipio">
+                                <Form.Group className="mb-3">
                                     <Form.Label>Município</Form.Label>
                                     <Form.Select
                                         name="municipio"
@@ -150,28 +195,70 @@ const InstituicaoEnsino = () => {
                                         required
                                     >
                                         <option value="">Selecione Município</option>
-                                        {(cidadesEstados[instituicaoEnsino.uf] || []).map(m => (
-                                            <option key={m.value} value={m.value}>{m.label}</option>
+                                        {municipios.map(m => (
+                                            <option key={m.value} value={m.value}>
+                                                {m.label}
+                                            </option>
                                         ))}
                                     </Form.Select>
                                 </Form.Group>
                             </Col>
                             <Col>
-                                <Form.Group className="mb-3" controlId="formGroupRegiao">
+                                <Form.Group className="mb-3">
                                     <Form.Label>Região</Form.Label>
-                                    <Form.Select
+                                    <Form.Control
+                                        type="text"
                                         name="regiao"
                                         value={instituicaoEnsino.regiao}
+                                        readOnly
+                                    />
+                                </Form.Group>
+                            </Col>
+                        </Row>
+
+                        <Row>
+                            <Col>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Mat. Básico</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        name="qt_mat_bas"
+                                        value={instituicaoEnsino.qt_mat_bas}
                                         onChange={handleChange}
-                                        required
-                                    >
-                                        <option value="">Selecione Região</option>
-                                        <option value="Norte">Norte</option>
-                                        <option value="Nordeste">Nordeste</option>
-                                        <option value="Centro-Oeste">Centro-Oeste</option>
-                                        <option value="Sudeste">Sudeste</option>
-                                        <option value="Sul">Sul</option>
-                                    </Form.Select>
+                                    />
+                                </Form.Group>
+                            </Col>
+                            <Col>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Mat. Prof.</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        name="qt_mat_prof"
+                                        value={instituicaoEnsino.qt_mat_prof}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
+                            </Col>
+                            <Col>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Mat. EJA</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        name="qt_mat_eja"
+                                        value={instituicaoEnsino.qt_mat_eja}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
+                            </Col>
+                            <Col>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Mat. Esp.</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        name="qt_mat_esp"
+                                        value={instituicaoEnsino.qt_mat_esp}
+                                        onChange={handleChange}
+                                    />
                                 </Form.Group>
                             </Col>
                         </Row>
@@ -180,8 +267,7 @@ const InstituicaoEnsino = () => {
                         <Button variant="secondary" onClick={handleShow}>
                             Fechar
                         </Button>
-                        <Button variant="danger">Apagar</Button>
-                        <Button type="submit" variant="primary" onClick={handleShow}>
+                        <Button type="submit" variant="primary">
                             Salvar
                         </Button>
                     </Modal.Footer>
