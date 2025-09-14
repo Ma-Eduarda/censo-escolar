@@ -1,12 +1,41 @@
-# React + Vite
+# 📚 Projeto Instituições de Ensino  
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Sistema em **React + Bootstrap** para cadastro, listagem e gerenciamento de Instituições de Ensino.  
+Permite inserir dados de escolas, selecionar **estado**, **município** e a **região é preenchida automaticamente** com base no estado escolhido.  
+Os dados ficam salvos no **LocalStorage**, garantindo que persistam mesmo após atualizar a página.  
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Funcionalidades  
 
-## Expanding the ESLint configuration
+- Cadastro de novas instituições (código, nome, estado, município, região e matrículas).  
+- Listagem das instituições cadastradas em uma tabela.  
+- Região detectada automaticamente ao selecionar o estado.  
+-  Municípios filtrados de acordo com o estado selecionado.  
+- Persistência de dados com **LocalStorage**.  
+- Notificação com **Toast** ao salvar uma nova instituição.  
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## 🛠️ Tecnologias utilizadas  
+
+- Resct
+- React Bootstrap
+- React Router 
+- JavaScript (ES6+)  
+
+--- 
+
+## 📂 Estrutura do Projeto  
+````
+src/
+├── components/
+│ └── InstituicaoEnsino.js # Componente principal
+├── datasets/
+│ ├── estados.js # Lista de estados com código e região
+│ ├── cidades.js # Lista de cidades vinculadas ao estado
+│ └── censoescolar.js # Base inicial de instituições
+├── App.js
+├── index.js
+└── ...
+````
